@@ -58,49 +58,6 @@ public class BookTest {
   }
 
   @Test
-  public void checkOut_setsThePersonId_Integer() {
-    Book testBook = new Book("Title", "Author", "Genre");
-    testBook.checkOut(1);
-    Integer expected = 1;
-    assertEquals(expected, testBook.getPersonId());
-  }
-
-  @Test
-  public void checkOut_setsCheckoutDate_now() {
-    Book testBook = new Book("Title", "Author", "Genre");
-    testBook.checkOut(1);
-    Timestamp expected = new Timestamp(new Date().getTime());
-    assertEquals(expected.getDate(), testBook.getTimeCheckedOut().getDate());
-  }
-
-  @Test
-  public void checkOut_setsDueDate_twoWeeks() {
-    Book testBook = new Book("Title", "Author", "Genre");
-    testBook.checkOut(1);
-    Calendar calendar = Calendar.getInstance();
-    Timestamp now = new Timestamp(new Date().getTime());
-    calendar.setTime(now);
-    calendar.add(Calendar.DAY_OF_WEEK, 14);
-    Timestamp expected = new Timestamp(calendar.getTime().getTime());
-    assertEquals(expected.getDate(), testBook.getDueDate().getDate());
-  }
-
-  @Test
-  public void checkOut_isCheckedOut_true() {
-    Book testBook = new Book("Title", "Author", "Genre");
-    testBook.checkOut(1);
-    assertEquals(true, testBook.isCheckedOut());
-  }
-
-  @Test
-  public void checkIn_isCheckedOut_false() {
-    Book testBook = new Book("Title", "Author", "Genre");
-    testBook.checkOut(1);
-    testBook.checkIn();
-    assertEquals(false, testBook.isCheckedOut());
-  }
-
-  @Test
   public void save_setsTheId_int() {
     Book testBook = new Book("Title", "Author", "Genre");
     testBook.save();
@@ -159,27 +116,6 @@ public class BookTest {
     Book secondBook = new Book("Title2", "Author2", "Genre2");
     secondBook.save();
     assertEquals(Book.find(secondBook.getId()), secondBook);
-  }
-
-  @Test(expected = UnsupportedOperationException.class)
-  public void extendCheckOut_throwsExceptionIfTimesCheckedOutIsAtMaxValue(){
-    Book testBook = new Book("Title", "Author", "Genre");
-    testBook.checkOut(1);
-    for(int i = 0; i <= (Book.MAX_CHECKOUTS); i++){
-      testBook.extendCheckOut();
-    }
-  }
-
-  @Test
-  public void book_checkOutsCannotGoBeyondMaxValue(){
-    Book testBook = new Book("Title", "Author", "Genre");
-    testBook.checkOut(1);
-    for(int i = 0; i <= (Book.MAX_CHECKOUTS); i++){
-      try {
-        testBook.extendCheckOut();
-      } catch (UnsupportedOperationException exception){ }
-    }
-    assertTrue(testBook.getTimesCheckedOut() <= Book.MAX_CHECKOUTS);
   }
 
 

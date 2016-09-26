@@ -8,11 +8,6 @@ public class Book {
   private String title;
   private String author;
   private String genre;
-  private Timestamp checkedOut;
-  private Timestamp dueDate;
-  private Integer personId;
-  private int timesCheckedOut;
-
 
   public Book(String title, String author, String genre) {
     this.title = title;
@@ -48,48 +43,13 @@ public class Book {
     this.genre = genre;
   }
 
-  public Integer getPersonId() {
-    return this.personId;
-  }
-
-  public Timestamp getTimeCheckedOut() {
-    return this.checkedOut;
-  }
-
-  public int getTimesCheckedOut() {
-    return this.timesCheckedOut;
-  }
-
-  public Timestamp getDueDate() {
-    return this.dueDate;
-  }
-
-  public boolean isCheckedOut() {
-    if(this.personId != null) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-
-
-  public void checkIn() {
-    this.personId = null;
-    this.checkedOut = null;
-  }
-
   public void save() {
     try(Connection con = DB.sql2o.open()) {
-    String sql = "INSERT INTO books (title, author, genre, checkedOut, timesCheckedOut, dueDate, personId) VALUES (:title, :author, :genre, :checkedOut, :timesCheckedOut, :dueDate, :personId)";
+    String sql = "INSERT INTO books (title, author, genre) VALUES (:title, :author, :genre)";
     this.id = (int) con.createQuery(sql, true)
       .addParameter("title", this.title)
       .addParameter("author", this.author)
       .addParameter("genre", this.genre)
-      .addParameter("checkedOut", this.checkedOut)
-      .addParameter("timesCheckedOut", this.timesCheckedOut)
-      .addParameter("dueDate", this.dueDate)
-      .addParameter("personId", this.personId)
       .executeUpdate()
       .getKey();
     }
@@ -97,16 +57,12 @@ public class Book {
 
   public void update() {
     try(Connection con = DB.sql2o.open()) {
-    String sql = "UPDATE books SET title = :title, author = :author, genre = :genre, checkedOut = :checkedOut, timesCheckedOut = :timesCheckedOut, dueDate = :dueDate, personId = :personId WHERE id = :id";
+    String sql = "UPDATE books SET title = :title, author = :author, genre = :genre WHERE id = :id";
     con.createQuery(sql)
       .addParameter("id", this.id)
       .addParameter("title", this.title)
       .addParameter("author", this.author)
       .addParameter("genre", this.genre)
-      .addParameter("checkedOut", this.checkedOut)
-      .addParameter("timesCheckedOut", this.timesCheckedOut)
-      .addParameter("dueDate", this.dueDate)
-      .addParameter("personId", this.personId)
       .executeUpdate();
     }
   }

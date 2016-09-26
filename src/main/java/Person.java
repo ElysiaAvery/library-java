@@ -9,8 +9,6 @@ public class Person {
   private int id;
   private String name;
   private List<Book> allBooks;
-  public static final int MAX_CHECKOUTS = 2;
-  public static final int MAX_BOOKS = 5;
   private List<Person> overduePatrons;
 
   public Person(String name) {
@@ -25,17 +23,21 @@ public class Person {
     return this.name;
   }
 
+  public void setName(String name) {
+    this.name = name;
+  }
+
   public List<Book> getAllBooks() {
     try(Connection con = DB.sql2o.open()) {
-      String sql = "SELECT * FROM books LEFT JOIN bookhistories ON books.Id = bookhistories.bookId WHERE history.personId = :personId";
+      String sql = "SELECT books.* FROM books LEFT JOIN bookhistories ON books.Id = bookhistories.bookId WHERE history.personId = :personId";
       return con.createQuery(sql)
-      .executeAndFetch(Person.class);
+      .executeAndFetch(Book.class);
     }
   }
 
   public List<Person> getOverduePatrons() {
     try(Connection con = DB.sql2o.open()) {
-      String sql = "SELECT persons.* FROM persons LEFT JOIN books ON books.personId = persons.Id WHERE books.dueDate > now()"
+      String sql = "SELECT persons.* FROM persons LEFT JOIN books ON books.personId = persons.Id WHERE books.dueDate > now()";
       return con.createQuery(sql)
       .executeAndFetch(Person.class);
     }
@@ -52,11 +54,11 @@ public class Person {
 
   public void save() {
     try(Connection con = DB.sql2o.open()) {
-      String sql = "INSERT INTO (name) VALUE (:name)";
+      String sql = "INSERT INTO persons (name) VALUES (:name)";
       this.id = (int) con.createQuery(sql, true)
         .addParameter("name", name)
         .executeUpdate()
-        .getKey()
+        .getKey();
     }
   }
 
@@ -66,7 +68,7 @@ public class Person {
         con.createQuery(sql)
           .addParameter("name", this.name)
           .addParameter("id", this.id)
-          .executeUpdate(;)
+          .executeUpdate();
     }
   }
 
@@ -80,7 +82,7 @@ public class Person {
   }
 
   public static Person find(int id) {
-    try(Connection con = DB.sql2o.opne()) {
+    try(Connection con = DB.sql2o.open()) {
       String sql = "SELECT * FROM persons WHERE id = :id";
       Person person = con.createQuery(sql)
         .addParameter("id", id)
@@ -97,33 +99,33 @@ public class Person {
     }
   }
 
-  private long twoWeeksFromNow() {
-    Calendar calendar = Calendar.getInstance();
-    Timestamp now = new Timestamp(new Date().getTime());
-    calendar.setTime(now);
-    calendar.add(Calendar.DAY_OF_WEEK, 14);
-    return calendar.getTime().getTime();
-  }
-
-  public void checkOut(Integer personId) {
-    this.personId = personId;
-    this.checkedOut = new Timestamp(new Date().getTime());
-    this.timesCheckedOut = 0;
-    this.dueDate = new Timestamp(twoWeeksFromNow());
-  }
-
-  public boolean extendCheckOut() {
-    if(timesCheckedOut < this.MAX_CHECKOUTS) {
-      this.timesCheckedOut++;
-      this.dueDate.setTime(twoWeeksFromNow());
-      return true;
-    } else {
-      throw new UnsupportedOperationException("You cannot check out a book more than twice!");
-    }
-  }
+  // private long twoWeeksFromNow() {
+  //   Calendar calendar = Calendar.getInstance();
+  //   Timestamp now = new Timestamp(new Date().getTime());
+  //   calendar.setTime(now);
+  //   calendar.add(Calendar.DAY_OF_WEEK, 14);
+  //   return calendar.getTime().getTime();
+  // }
+  //
+  // public void checkOut(Integer personId) {
+  //   this.personId = personId;
+  //   this.checkedOut = new Timestamp(new Date().getTime());
+  //   this.timesCheckedOut = 0;
+  //   this.dueDate = new Timestamp(twoWeeksFromNow());
+  // }
+  //
+  // public boolean extendCheckOut() {
+  //   if(timesCheckedOut < this.MAX_CHECKOUTS) {
+  //     this.timesCheckedOut++;
+  //     this.dueDate.setTime(twoWeeksFromNow());
+  //     return true;
+  //   } else {
+  //     throw new UnsupportedOperationException("You cannot check out a book more than twice!");
+  //   }
+  // }
 
   @Override
-  public boolean equals(otherPerson) {
+  public boolean equals(Object otherPerson) {
     if (!(otherPerson instanceof Person)) {
       return false;
     } else {
