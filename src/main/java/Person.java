@@ -8,7 +8,7 @@ import java.util.Date;
 public class Person {
   private int id;
   private String name;
-  private List<Book> allBooks;
+  private List<Object> allLibraryItems;
   private List<Person> overduePatrons;
 
   public Person(String name) {
@@ -27,29 +27,47 @@ public class Person {
     this.name = name;
   }
 
-  public List<Book> getAllBooks() {
+  public List<LibraryItem> getAllLibraryItems() {
     try(Connection con = DB.sql2o.open()) {
-      String sql = "SELECT books.* FROM books LEFT JOIN bookhistories ON books.Id = bookhistories.bookId WHERE history.personId = :personId";
+      String sql = "SELECT libraryItems.* FROM libraryItems LEFT JOIN bookhistories ON libraryItems.Id = bookhistories.bookId WHERE history.personId = :personId";
       return con.createQuery(sql)
-      .executeAndFetch(Book.class);
+      .executeAndFetch(LibraryItem.class);
     }
   }
 
   public List<Person> getOverduePatrons() {
     try(Connection con = DB.sql2o.open()) {
-      String sql = "SELECT persons.* FROM persons LEFT JOIN books ON books.personId = persons.Id WHERE books.dueDate > now()";
+      String sql = "SELECT persons.* FROM persons LEFT JOIN libraryItems ON libraryItems.personId = persons.Id WHERE libraryItems.dueDate > now()";
       return con.createQuery(sql)
       .executeAndFetch(Person.class);
     }
   }
 
-  public List<Book> getBooks() {
+  public List<Object> getLibraryItems() {
+    List<Object> allLibraryItems = new ArrayList<Object>();
     try(Connection con = DB.sql2o.open()) {
-      String sql = "SELECT * FROM books WHERE personId = :id";
-      return con.createQuery(sql)
+      String sqlBook = "SELECT * FROM libraryItems WHERE personId = :id AND type='book';";
+      List<Book> books = con.createQuery(sqlBook)
       .addParameter("id", this.id)
+      .throwOnMappingFailure(false)
       .executeAndFetch(Book.class);
+      allLibraryItems.addAll(books);
+
+      String sqlCD = "SELECT * FROM libraryItems WHERE personId = :id AND type='cd';";
+      List<CD> cds = con.createQuery(sqlCD)
+      .addParameter("id", this.id)
+      .throwOnMappingFailure(false)
+      .executeAndFetch(CD.class);
+      allLibraryItems.addAll(cds);
+
+      String sqlMagazine = "SELECT * FROM libraryItems WHERE personId = :id AND type='magazine';";
+      List<Magazine> magazines = con.createQuery(sqlMagazine)
+      .addParameter("id", this.id)
+      .throwOnMappingFailure(false)
+      .executeAndFetch(Magazine.class);
+      allLibraryItems.addAll(magazines);
     }
+    return allLibraryItems;
   }
 
   public void save() {

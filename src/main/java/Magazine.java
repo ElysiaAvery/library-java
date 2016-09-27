@@ -3,31 +3,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.sql.Timestamp;
 
-public class Book extends LibraryItem {
-  private String author;
-  public static final String DATABASE_TYPE = "book";
+public class Magazine extends LibraryItem {
+  private int issueNumber;
+  public static final String DATABASE_TYPE = "magazine";
 
-  public Book(String title, String author, String genre) {
+  public Magazine(String title, String genre, int issueNumber) {
     this.title = title;
-    this.author = author;
     this.genre = genre;
+    this.issueNumber = issueNumber;
     type = DATABASE_TYPE;
   }
 
-  public String getAuthor() {
-    return this.author;
+  public int getIssueNumber() {
+    return this.issueNumber;
   }
 
-  public void setAuthor(String author) {
-    this.author = author;
+  public void setIssueNumber(int issueNumber) {
+    this.issueNumber = issueNumber;
   }
 
   public void save() {
     try(Connection con = DB.sql2o.open()) {
-    String sql = "INSERT INTO libraryItems (title, author, genre) VALUES (:title, :author, :genre)";
+    String sql = "INSERT INTO libraryItems (title, issueNumber, genre) VALUES (:title, :issueNumber, :genre)";
     this.id = (int) con.createQuery(sql, true)
       .addParameter("title", this.title)
-      .addParameter("author", this.author)
+      .addParameter("issueNumber", this.issueNumber)
       .addParameter("genre", this.genre)
       .executeUpdate()
       .getKey();
@@ -36,11 +36,11 @@ public class Book extends LibraryItem {
 
   public void update() {
     try(Connection con = DB.sql2o.open()) {
-    String sql = "UPDATE libraryItems SET title = :title, author = :author, genre = :genre WHERE id = :id";
+    String sql = "UPDATE libraryItems SET title = :title, issueNumber = :issueNumber, genre = :genre WHERE id = :id";
     con.createQuery(sql)
       .addParameter("id", this.id)
       .addParameter("title", this.title)
-      .addParameter("author", this.author)
+      .addParameter("issueNumber", this.issueNumber)
       .addParameter("genre", this.genre)
       .executeUpdate();
     }
@@ -55,52 +55,52 @@ public class Book extends LibraryItem {
     }
   }
 
-  public static List<Book> search(String search) {
+  public static List<Magazine> search(String search) {
     try(Connection con = DB.sql2o.open()) {
-    String sql = "SELECT * FROM libraryItems WHERE title ~* :search OR author ~* :search OR genre ~* :search";
+    String sql = "SELECT * FROM libraryItems WHERE title ~* :search OR genre ~* :search";
     return con.createQuery(sql)
       .addParameter("search", ".*" + search + ".*")
       .throwOnMappingFailure(false)
-      .executeAndFetch(Book.class);
+      .executeAndFetch(Magazine.class);
     }
   }
 
-  public static Book find(int id) {
+  public static Magazine find(int id) {
     try(Connection con = DB.sql2o.open()) {
     String sql = "SELECT * FROM libraryItems where id=:id";
-    Book book = con.createQuery(sql)
+    Magazine book = con.createQuery(sql)
       .addParameter("id", id)
       .throwOnMappingFailure(false)
-      .executeAndFetchFirst(Book.class);
+      .executeAndFetchFirst(Magazine.class);
     return book;
     }
   }
 
-  public static List<Book> findOverdue() {
+  public static List<Magazine> findOverdue() {
     try(Connection con = DB.sql2o.open()) {
     String sql = "SELECT * FROM libraryItems WHERE dueDate < now()";
     return con.createQuery(sql)
-      .executeAndFetch(Book.class);
+      .executeAndFetch(Magazine.class);
     }
   }
 
-  public static List<Book> all() {
-    String sql = "SELECT * FROM libraryItems WHERE type = 'book'";
+  public static List<Magazine> all() {
+    String sql = "SELECT * FROM libraryItems WHERE type = 'magazine'";
     try(Connection con = DB.sql2o.open()) {
       return con.createQuery(sql)
       .throwOnMappingFailure(false)
-      .executeAndFetch(Book.class);
+      .executeAndFetch(Magazine.class);
     }
   }
 
   @Override
-  public boolean equals(Object otherBook){
-    if (!(otherBook instanceof Book)) {
+  public boolean equals(Object otherMagazine){
+    if (!(otherMagazine instanceof Magazine)) {
       return false;
     } else {
-      Book newBook = (Book) otherBook;
-      return this.getTitle().equals(newBook.getTitle()) &&
-             this.getId() == newBook.getId();
+      Magazine newMagazine = (Magazine) otherMagazine;
+      return this.getTitle().equals(newMagazine.getTitle()) &&
+             this.getId() == newMagazine.getId();
     }
   }
 

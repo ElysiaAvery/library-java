@@ -118,5 +118,13 @@ public class BookTest {
     assertEquals(Book.find(secondBook.getId()), secondBook);
   }
 
+  @Test
+  public void author_recordsAuthorInDatabase() {
+    Book firstBook = new Book("Title", "Author", "Genre");
+    firstBook.save();
+    firstBook.setAuthor("new author");
+    firstBook.update();
+    assertEquals("new author", firstBook.getAuthor());
+  }
 
 }

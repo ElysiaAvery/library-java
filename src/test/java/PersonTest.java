@@ -87,16 +87,18 @@ public class PersonTest {
     assertEquals("Mo", Person.find(testPerson.getId()).getName());
   }
 
-  // @Test
-  // public void getBooks_retrievesAllBooksFromDatabase_BooksList() {
-  //   Person testPerson = new Person("Name");
-  //   Book firstBook = new Book("Title", "Author", "Genre");
-  //   firstBook.save();
-  //   Book secondBook = new Book("Title", "Author", "Genre");
-  //   secondBook.save();
-  //   Book[] books = new Book[] { firstBook, secondBook };
-  //   assertTrue(testPerson.getBooks().containsAll(Arrays.asList(books)));
-  // }
+  @Test
+  public void getLibraryItems_retrievesAllLibraryItemsFromDatabase_LibraryItemsList() {
+    Person testPerson = new Person("Name");
+    Book firstBook = new Book("Title", "Author", "Genre");
+    firstBook.save();
+    CD secondCD = new CD("Title", "Artist", "Genre");
+    secondCD.save();
+    Magazine thirdMagazine = new Magazine("Title", "Genre", 1);
+    thirdMagazine.save();
+    Object[] libraryItems = new Object[] { firstBook, secondCD, thirdMagazine };
+    assertTrue(testPerson.getLibraryItems().containsAll(Arrays.asList(libraryItems)));
+  }
 
   @Test
   public void delete_deletesPerson_true() {

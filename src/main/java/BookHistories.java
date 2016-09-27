@@ -12,9 +12,9 @@ public class BookHistories {
   private Timestamp dateReturned;
   private int timesCheckedOut;
   private Integer personId;
-  private Integer bookId;
+  private Integer libraryItemsId;
   public static final int MAX_CHECKOUTS = 2;
-  public static final int MAX_BOOKS = 5;
+  public static final int MAX_LIBRARYITEMS = 5;
 
   public int getId() {
       return this.id;
@@ -24,8 +24,8 @@ public class BookHistories {
     return this.personId;
   }
 
-  public Integer getBookId() {
-    return this.bookId;
+  public Integer getLibraryItemsId() {
+    return this.libraryItemsId;
   }
 
   public Timestamp getDateCheckedOut() {
@@ -44,24 +44,24 @@ public class BookHistories {
     return this.timesCheckedOut;
   }
 
-  public List<Book> getBooks() {
+  public List<LibraryItem> getLibraryItems() {
     try(Connection con = DB.sql2o.open()) {
-      String sql = "SELECT * FROM books WHERE personId = :id";
+      String sql = "SELECT * FROM libraryItems WHERE personId = :id";
       return con.createQuery(sql)
       .addParameter("id", this.id)
-      .executeAndFetch(Book.class);
+      .executeAndFetch(LibraryItem.class);
     }
   }
 
   public void save() {
     try(Connection con = DB.sql2o.open()) {
-      String sql = "INSERT INTO bookhistories (dateCheckedOut, dueDate, dateReturned, personId, bookId) VALUES (:dateCheckedOut, :dueDate, :dateReturned, :personId, :bookId)";
+      String sql = "INSERT INTO bookhistories (dateCheckedOut, dueDate, dateReturned, personId, libraryItemsId) VALUES (:dateCheckedOut, :dueDate, :dateReturned, :personId, :libraryItemsId)";
       this.id = (int) con.createQuery(sql, true)
         .addParameter("dateCheckedOut", dateCheckedOut)
         .addParameter("dueDate", dueDate)
         .addParameter("dateReturned", dateReturned)
         .addParameter("personId", personId)
-        .addParameter("bookId", bookId)
+        .addParameter("libraryItemsId", libraryItemsId)
         .executeUpdate()
         .getKey();
     }
@@ -103,7 +103,7 @@ public class BookHistories {
       BookHistories newBookHistories = (BookHistories) otherBookHistories;
       return this.getPersonId() == newBookHistories.getPersonId() &&
              this.getId() == newBookHistories.getId() &&
-             this.getBookId() == newBookHistories.getBookId();
+             this.getLibraryItemsId() == newBookHistories.getLibraryItemsId();
     }
   }
 
@@ -127,9 +127,9 @@ public class BookHistories {
     return calendar.getTime().getTime();
   }
 
-  public void checkOut(Integer personId, int bookId) {
+  public void checkOut(Integer personId, int libraryItemsId) {
     this.personId = personId;
-    this.bookId = bookId;
+    this.libraryItemsId = libraryItemsId;
     this.dateCheckedOut = new Timestamp(new Date().getTime());
     this.timesCheckedOut = 0;
     this.dueDate = new Timestamp(twoWeeksFromNow());
@@ -141,7 +141,7 @@ public class BookHistories {
       this.dueDate.setTime(twoWeeksFromNow());
       return true;
     } else {
-      throw new UnsupportedOperationException("You cannot check out a book more than twice!");
+      throw new UnsupportedOperationException("You cannot check out an item more than twice!");
     }
   }
 }
