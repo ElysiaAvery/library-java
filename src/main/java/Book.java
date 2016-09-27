@@ -24,7 +24,7 @@ public class Book extends LibraryItem {
 
   public void save() {
     try(Connection con = DB.sql2o.open()) {
-    String sql = "INSERT INTO libraryItems (title, author, genre) VALUES (:title, :author, :genre)";
+    String sql = "INSERT INTO libraryItems (title, author, genre, type) VALUES (:title, :author, :genre, 'book')";
     this.id = (int) con.createQuery(sql, true)
       .addParameter("title", this.title)
       .addParameter("author", this.author)

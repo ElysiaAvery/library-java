@@ -92,10 +92,19 @@ public class PersonTest {
     Person testPerson = new Person("Name");
     Book firstBook = new Book("Title", "Author", "Genre");
     firstBook.save();
+    BookHistories bookHistories = new BookHistories();
+    bookHistories.checkOut(testPerson.getId(), firstBook.getId());
+    bookHistories.save();
     CD secondCD = new CD("Title", "Artist", "Genre");
     secondCD.save();
+    BookHistories bookHistories1 = new BookHistories();
+    bookHistories1.checkOut(testPerson.getId(), secondCD.getId());
+    bookHistories1.save();
     Magazine thirdMagazine = new Magazine("Title", "Genre", 1);
     thirdMagazine.save();
+    BookHistories bookHistories2 = new BookHistories();
+    bookHistories2.checkOut(testPerson.getId(), thirdMagazine.getId());
+    bookHistories2.save();
     Object[] libraryItems = new Object[] { firstBook, secondCD, thirdMagazine };
     assertTrue(testPerson.getLibraryItems().containsAll(Arrays.asList(libraryItems)));
   }

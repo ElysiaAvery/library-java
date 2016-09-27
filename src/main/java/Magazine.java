@@ -24,7 +24,7 @@ public class Magazine extends LibraryItem {
 
   public void save() {
     try(Connection con = DB.sql2o.open()) {
-    String sql = "INSERT INTO libraryItems (title, issueNumber, genre) VALUES (:title, :issueNumber, :genre)";
+    String sql = "INSERT INTO libraryItems (title, issueNumber, genre, type) VALUES (:title, :issueNumber, :genre, 'magazine')";
     this.id = (int) con.createQuery(sql, true)
       .addParameter("title", this.title)
       .addParameter("issueNumber", this.issueNumber)

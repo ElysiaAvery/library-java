@@ -46,21 +46,21 @@ public class Person {
   public List<Object> getLibraryItems() {
     List<Object> allLibraryItems = new ArrayList<Object>();
     try(Connection con = DB.sql2o.open()) {
-      String sqlBook = "SELECT * FROM libraryItems WHERE personId = :id AND type='book';";
+      String sqlBook = "SELECT libraryItems.* FROM libraryItems LEFT JOIN bookHistories ON bookHistories.libraryItemsId = libraryItems.id WHERE bookHistories.personId = :id AND type='book';";
       List<Book> books = con.createQuery(sqlBook)
       .addParameter("id", this.id)
       .throwOnMappingFailure(false)
       .executeAndFetch(Book.class);
       allLibraryItems.addAll(books);
 
-      String sqlCD = "SELECT * FROM libraryItems WHERE personId = :id AND type='cd';";
+      String sqlCD = "SELECT libraryItems.* FROM libraryItems LEFT JOIN bookHistories ON bookHistories.libraryItemsId = libraryItems.id WHERE bookHistories.personId = :id AND type='cd';";
       List<CD> cds = con.createQuery(sqlCD)
       .addParameter("id", this.id)
       .throwOnMappingFailure(false)
       .executeAndFetch(CD.class);
       allLibraryItems.addAll(cds);
 
-      String sqlMagazine = "SELECT * FROM libraryItems WHERE personId = :id AND type='magazine';";
+      String sqlMagazine = "SELECT libraryItems.* FROM libraryItems LEFT JOIN bookHistories ON bookHistories.libraryItemsId = libraryItems.id WHERE bookHistories.personId = :id AND type='magazine';";
       List<Magazine> magazines = con.createQuery(sqlMagazine)
       .addParameter("id", this.id)
       .throwOnMappingFailure(false)
